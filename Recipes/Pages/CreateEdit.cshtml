@@ -1,9 +1,6 @@
 ﻿@page
 @model Recipes.Pages.CreateEditModel
-@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
-@{
-    var token = antiforgery.GetAndStoreTokens(HttpContext).RequestToken;
-}
+
 @{
     var createOrEdit = Model.Id > 0 ? "Edit" : "Create";
     ViewData["Title"] = $"{createOrEdit} Recipe";
@@ -21,6 +18,18 @@
     }
 }
 
+<style>
+    input[type=text]{
+    margin-bottom: 25px;
+ }
+  label {
+      margin-top:25px;
+  }
+  .multiselect-native-select, #multi-select {
+        width: 500px !important;
+    }
+</style>
+
 <img src="@imgSrc" />
 
 <br />
@@ -29,7 +38,6 @@
 
     @Html.HiddenFor(x => x.Id)
     @Html.HiddenFor(x => x.RawImage)
-    @Html.Hidden("__RequestVerificationToken", token)
 
     <div class="form-group">
         <label>Title</label>
@@ -41,7 +49,28 @@
         @Html.TextBoxFor(x => x.Description, new { @class = "form-control" })
     </div>
 
-    <table class="table">
+    <div class="form-group">
+        <label>Ingredients</label>
+        <select id="multi-select" multiple="multiple" name="SelectedIngredients[]">
+
+            @foreach (var ingredient in Model.AllIngredients)
+            {
+                var selected = Model.SelectedIngredients.Contains(ingredient.Id);
+
+                if (selected)
+                {
+                    <option selected value="@ingredient.Id">@ingredient.Name</option>
+                }
+                else
+                {
+                    <option value="@ingredient.Id">@ingredient.Name</option>
+                }
+            }
+
+        </select>
+    </div>
+
+    <table id="instructionTable" class="table">
         <thead>
             <tr>
                 <th class="d-none">Id</th>
@@ -61,6 +90,13 @@
         </tbody>
     </table>
 
+    <div class="input-group">
+        <input type="text" class="form-control" id="newInstruction" placeholder="New Instruction" style="margin-right:250px;">
+        <span class="input-group-btn">
+            <button class="btn btn-info" id="btnNewInstruction" type="button">New Instruction</button>
+        </span>
+    </div>
+
     <div class="form-group">
         <label>Upload New Image</label>
         <br />
@@ -68,8 +104,8 @@
     </div>
 
     <button type="submit" class="btn btn-primary">Submit</button>
-</form>
 
+</form>
 
 
 @section Scripts {
@@ -78,7 +114,9 @@
 
         $(function () {
 
-            $(".instructionDelete").click(function (e) {
+            $('#multi-select').select2();
+
+            $("table").on("click", ".instructionDelete", function(){
 
                 $tr = $(this).closest('tr');
 
@@ -94,6 +132,29 @@
                     $tr.remove();
                 });
             })
+
+            $("#btnNewInstruction").click(function () {
+
+                var recipeId = $("#Id").val()
+                var newInstruction = $("#newInstruction").val();
+
+                 $.ajax({
+                    url: '/createedit?handler=InstructionAdd',
+                    method: 'post',
+                    headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                    data: { recipeId: recipeId, description : newInstruction },
+                }).done(function (data) {
+
+                    console.log(data.id);
+                    console.log(data.description);
+
+                    $("#instructionTable tr:last").after(`<tr>
+                                                            <td class="d-none instructionId">`+ data.id + `</td>
+                                                            <td>`+ data.description + `</td> 
+                                                            <td><button type="button" class="btn btn-danger instructionDelete">Delete</button></td>
+                                                          </tr>`);
+                });
+            });
         });
     </script>
 

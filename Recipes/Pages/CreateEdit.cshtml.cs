@@ -21,7 +21,8 @@ namespace Recipes.Pages
         public string Title { get; set; }
         public string Description { get; set; }
         public byte[] RawImage { get; set; }
-        public int[] SelectedInstructionIds { get; set; }
+        public int[] SelectedIngredients { get; set; }
+        public List<(int Id, string Name)> AllIngredients { get; set; }
         public List<(int Id, string Description)> Instructions { get; set; }
         public IFormFile Image { get; set; }
 
@@ -41,6 +42,8 @@ namespace Recipes.Pages
                 Description = result.Description;
                 RawImage = result.Image;
                 Instructions = result.Instructions.Select(x => (x.Id, x.Description)).ToList();
+                SelectedIngredients = result.Ingredients.Select(x => x.Id).ToArray();
+                AllIngredients = (await _mediator.Send(new AllIngredientsQuery())).Select(x => (x.Id, x. Name)).ToList();
             }
         }
 
@@ -62,6 +65,7 @@ namespace Recipes.Pages
                 Title = Title,
                 Description = Description,
                 Image = bytes ?? RawImage,
+                SelectedIngredientIds = SelectedIngredients
             };
 
             var id = await _mediator.Send(recipeCreate);
@@ -74,6 +78,13 @@ namespace Recipes.Pages
             await _mediator.Send(new DeleteCommand<Data.Instruction> { Id = instructionId });
 
             return null;
+        }
+
+        public async Task<IActionResult> OnPostInstructionAdd(int recipeId, string description)
+        {
+            var id = await _mediator.Send(new AddCommand<Data.Instruction> { Entity = new Data.Instruction { Description = description, RecipeId = recipeId } });
+
+            return new JsonResult(new { Id = id, Description = description });
         }
     }
 }

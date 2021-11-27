@@ -7,6 +7,7 @@ namespace Recipes.Data
         public DbSet<Recipe> Recipe { get; set; }
         public DbSet<Ingredient> Ingredient { get; set; }
         public DbSet<Instruction> Instruction { get; set; }
+        public DbSet<RecipeIngredient> RecipeIngredient { get; set; }
 
         public RecipeContext(DbContextOptions<RecipeContext> options) : base(options)
         {

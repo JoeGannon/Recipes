@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Recipes.Data;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,8 +13,7 @@ namespace Recipes.Features.CreateEdit
         public string Title { get; set; }
         public string Description { get; set; }
         public byte[] Image { get; set; }
-        public IEnumerable<Ingredient> Ingredients { get; set; }
-        public IEnumerable<Instruction> Instructions { get; set; }
+        public IEnumerable<int> SelectedIngredientIds { get; set; }
     }
 
 
@@ -38,7 +38,32 @@ namespace Recipes.Features.CreateEdit
 
             _context.Update(recipe);
 
+            var currentIngredients = _context.RecipeIngredient.Where(x => x.RecipeId == request.Id).ToList();
+
+            deleteIngredients();
+            addNewIngredients();
+
             await _context.SaveChangesAsync();
+
+            void deleteIngredients()
+            {             
+                var deletedIngredients = currentIngredients.Where(x => request.SelectedIngredientIds.Contains(x.IngredientId) == false);
+
+                _context.RecipeIngredient.RemoveRange(deletedIngredients);
+            }
+
+            void addNewIngredients()
+            {
+                var newIngredients = request.SelectedIngredientIds
+                    .Where(x => currentIngredients.Select(x => x.IngredientId).Contains(x) == false)
+                    .Select(x => new RecipeIngredient
+                    {
+                        Recipe = recipe,
+                        IngredientId = x,
+                    });
+
+                _context.RecipeIngredient.AddRangeAsync(newIngredients);
+            }
 
             return recipe.Id;
         }

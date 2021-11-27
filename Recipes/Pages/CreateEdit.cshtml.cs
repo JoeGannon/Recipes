@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Recipes.Data;
 using Recipes.Features;
 using Recipes.Features.CreateEdit;
 using Recipes.Features.Search;
@@ -21,9 +20,9 @@ namespace Recipes.Pages
         public string Title { get; set; }
         public string Description { get; set; }
         public byte[] RawImage { get; set; }
-        public int[] SelectedIngredients { get; set; }
+        public int[] SelectedIngredients { get; set; } = new int[] { };
         public List<(int Id, string Name)> AllIngredients { get; set; }
-        public List<(int Id, string Description)> Instructions { get; set; }
+        public List<(int Id, string Description)> Instructions { get; set; } = new List<(int Id, string Description)>();
         public IFormFile Image { get; set; }
 
         public CreateEditModel(IMediator mediator)
@@ -42,9 +41,10 @@ namespace Recipes.Pages
                 Description = result.Description;
                 RawImage = result.Image;
                 Instructions = result.Instructions.Select(x => (x.Id, x.Description)).ToList();
-                SelectedIngredients = result.Ingredients.Select(x => x.Id).ToArray();
-                AllIngredients = (await _mediator.Send(new AllIngredientsQuery())).Select(x => (x.Id, x. Name)).ToList();
+                SelectedIngredients = result.Ingredients.Select(x => x.Id).ToArray();                
             }
+
+            AllIngredients = (await _mediator.Send(new AllIngredientsQuery())).Select(x => (x.Id, x.Name)).ToList();
         }
 
         public async Task<IActionResult> OnPost()

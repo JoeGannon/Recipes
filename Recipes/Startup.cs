@@ -28,6 +28,7 @@ namespace Recipes
 
             //todo register dynamically for all types
             services.AddScoped<IRequestHandler<DeleteCommand<Instruction>, Unit>, DeleteCommandHandler<Instruction>>();
+            services.AddScoped<IRequestHandler<DeleteCommand<Recipe>, Unit>, DeleteCommandHandler<Recipe>>();
             services.AddScoped<IRequestHandler<AddCommand<Instruction>, int>, AddCommandHandler<Instruction>>();
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();

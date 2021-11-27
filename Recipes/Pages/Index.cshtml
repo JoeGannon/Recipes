@@ -4,78 +4,115 @@
     ViewData["Title"] = "Home page";
 }
 
-    <div class="container">
-        <div class="input-group">
-            <input type="text" class="form-control" id="search" placeholder="Search">
-            <a href="/createedit" class="btn btn-info" id="create" style="margin-left:60%">Create Recipe</a>
-        </div>
-        <br />
-        <div class="text-center">
-            <table id="table">
-                <thead>
-                    <tr>
-                        <th data-field="id" data-visible="false">Id</th>
-                        <th data-field="title">Title</th>
-                        <th data-field="description">Description</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
+@{
+    var token = antiforgery.GetAndStoreTokens(HttpContext).RequestToken;
+}
+
+<div class="container">
+    <div class="input-group">
+        <input type="text" class="form-control" id="search" placeholder="Search">
+        <a href="/createedit" class="btn btn-info" id="create" style="margin-left:60%">Create Recipe</a>
     </div>
-  
-@section Scripts { 
-<script>
-   
+    <br />
+    <div class="text-center">
+        <table id="table">
+            <thead>
+                <tr>
+                    <th data-field="id" data-visible='false'>Id</th>
+                    <th data-field="title">Title</th>
+                    <th data-field="description">Description</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
 
-    $(function () {
+@section Scripts {
+    <script>
 
-        $table = $('#table');
 
-        $.ajax({
-            url: '/?handler=Search',
-            contentType: "application/json;",
-            dataType: "json",
-        }).done(function (data) {
+        $(function () {
 
-            $table.bootstrapTable({
-                data: data.recipes,
-                columns: [{}, {}, {},
-                {
-                    title: 'Ingredients',
-                    align: 'center',
-                    valign: 'middle',
-                    clickToSelect: false,
-                    formatter: function (value, row, index) {
-
-                        var ingredients = [];
-
-                        row.ingredients.forEach(function (i) {                          
-                          ingredients.push(i.name);
-                        });
-
-                        return ingredients.join(', ');
-                    }
-                }],
-                onClickRow: function (row) {
-                    window.location.href = '/createedit?id=' + row.id;
-                }
-            });
-
-        });
-
-        $("#search").keyup(function () {
+            $table = $('#table');
 
             $.ajax({
                 url: '/?handler=Search',
                 contentType: "application/json;",
                 dataType: "json",
-                data: { query: $(this).val() },
             }).done(function (data) {
 
-                $table.bootstrapTable('load', data.recipes);
+                $table.bootstrapTable({
+                    data: data.recipes,
+                    columns: [{}, {}, {},
+                    {
+                        title: 'Ingredients',
+                        align: 'center',
+                        valign: 'middle',
+                        clickToSelect: false,
+                        formatter: function (value, row, index) {
+
+                            var ingredients = [];
+
+                            row.ingredients.forEach(function (i) {
+                                ingredients.push(i.name);
+                            });
+
+                            return ingredients.join(', ');
+                        }
+                    },
+                    {
+                        title: 'Delete',
+                        class: 'deleteCol',
+                        align: 'center',
+                        valign: 'middle',
+                        clickToSelect: false,
+                        formatter: function (value, row, index) {
+                            return '<button class=\'btn btn-danger btn-delete \' id="' + row.id + '"  >Delete</button> ';
+                        }
+                    }
+                    ],
+                });
+
             });
-        })
-    });
-</script>
+
+            $("#table").on("click", "tbody tr", function (e) {
+
+                var id = $(this).find('.btn-delete').attr('id');
+                window.location.href = '/createedit?id=' + id;
+            });
+
+            $("table").on("click", ".btn-delete", function (e) {
+
+                $tr = $(this).closest('tr');
+
+                e.stopPropagation();
+                var id = $(this).attr('id');
+
+                $.ajax({
+                    url: '/index?handler=Delete',
+                    method: 'post',
+                    headers: { "RequestVerificationToken": '@token' },
+                    data: { recipeId: id },
+                }).done(function (data) {
+
+                    $tr.remove();
+                });
+            });
+
+            $("#search").keyup(function () {
+
+                $.ajax({
+                    url: '/?handler=Search',
+                    contentType: "application/json;",
+                    dataType: "json",
+                    data: { query: $(this).val() },
+                }).done(function (data) {
+
+                    $table.bootstrapTable('load', data.recipes);
+                });
+            })
+        });
+    </script>
 
 }

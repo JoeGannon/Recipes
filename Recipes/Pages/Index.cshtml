@@ -4,159 +4,76 @@
     ViewData["Title"] = "Home page";
 }
 
+
+
     <div class="text-center">
         <div class="container">
-            <table id="table" data-height="460">
+        
+
+            <table id="table">
                 <thead>
                     <tr>
-                        <th data-field="id">Item ID</th>
-                        <th data-field="name">Item Name</th>
-                        <th data-field="price">Item Price</th>
-                        <th>Show Name</th>
+                        <th data-field="id" data-visible="false">Id</th>
+                        <th data-field="title">Title</th>
+                        <th data-field="description">Description</th>
                     </tr>
                 </thead>
             </table>
         </div>
     </div>
 
+  <button id="test"> Test </button>
+
 @section Scripts { 
 <script>
    
 
     $(function () {
-    
-        var mydata =
-            [
-                {
-                    "id": 0,
-                    "name": "test0",
-                    "price": "$0"
-                },
-                {
-                    "id": 1,
-                    "name": "test1",
-                    "price": "$1"
-                },
-                {
-                    "id": 2,
-                    "name": "test2",
-                    "price": "$2"
-                },
-                {
-                    "id": 3,
-                    "name": "test3",
-                    "price": "$3"
-                },
-                {
-                    "id": 4,
-                    "name": "test4",
-                    "price": "$4"
-                },
-                {
-                    "id": 5,
-                    "name": "test5",
-                    "price": "$5"
-                },
-                {
-                    "id": 6,
-                    "name": "test6",
-                    "price": "$6"
-                },
-                {
-                    "id": 7,
-                    "name": "test7",
-                    "price": "$7"
-                },
-                {
-                    "id": 8,
-                    "name": "test8",
-                    "price": "$8"
-                },
-                {
-                    "id": 9,
-                    "name": "test9",
-                    "price": "$9"
-                },
-                {
-                    "id": 10,
-                    "name": "test10",
-                    "price": "$10"
-                },
-                {
-                    "id": 11,
-                    "name": "test11",
-                    "price": "$11"
-                },
-                {
-                    "id": 12,
-                    "name": "test12",
-                    "price": "$12"
-                },
-                {
-                    "id": 13,
-                    "name": "test13",
-                    "price": "$13"
-                },
-                {
-                    "id": 14,
-                    "name": "test14",
-                    "price": "$14"
-                },
-                {
-                    "id": 15,
-                    "name": "test15",
-                    "price": "$15"
-                },
-                {
-                    "id": 16,
-                    "name": "test16",
-                    "price": "$16"
-                },
-                {
-                    "id": 17,
-                    "name": "test17",
-                    "price": "$17"
-                },
-                {
-                    "id": 18,
-                    "name": "test18",
-                    "price": "$18"
-                },
-                {
-                    "id": 19,
-                    "name": "test19",
-                    "price": "$19"
-                },
-                {
-                    "id": 20,
-                    "name": "test20",
-                    "price": "$20"
-                }
-            ];
 
-        $('#table').bootstrapTable({
-            data: mydata,
-            columns: [{}, {}, {},
-            {
-                field: 'operate',
-                title: 'Edit',
-                align: 'center',
-                valign: 'middle',
-                clickToSelect: false,
-                formatter: function (value, row, index) {
-                    return '<button class=\'btn btn-primary \' pageName="' + row.name + '" pageDetails="' + row.price + '"  >Edit</button> ';
+        $table = $('#table');
+
+        $.ajax({
+            url: '/?handler=Search',
+            contentType: "application/json;",
+            dataType: "json",
+        }).done(function (data) {
+
+            globalData = data.recipes;
+
+            $table.bootstrapTable({
+                data: data.recipes,
+                columns: [{}, {}, {},
+                {
+                    field: 'operate',
+                    title: 'Delete',
+                    align: 'center',
+                    valign: 'middle',
+                    clickToSelect: false,
+                    formatter: function (value, row, index) {
+                        console.log(row)
+                        return '<button class=\'btn btn-danger \' pageName="' + row.id + '" pageDetails="' + row.title + '"  >Delete</button> ';
+                    }
+                }],
+                onClickRow: function (row) {
+                    console.log(row.id);
                 }
-            }
-            ]
+            });
+
         });
 
-        $(".btn").click(function () {
-            var pageDetails = $(this).attr('pageDetails');
-            var pageName = $(this).attr('pageName');
-            console.log(pageDetails, pageName);
+        $("#test").click(function (e) {
 
-        });
-});
+            $.ajax({
+                url: '/?handler=Search',
+                contentType: "application/json;",
+                dataType: "json",
+                data: { filter: "test" },
+            }).done(function (data) {
+
+                $table.bootstrapTable('load', data.recipes);
+            });
+        })
+    });
 </script>
 
 }

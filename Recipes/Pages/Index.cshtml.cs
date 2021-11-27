@@ -20,11 +20,11 @@ namespace Recipes.Pages
         {
         }
 
-        public IActionResult OnGetSearch(string filter)
+        public IActionResult OnGetSearch(string query)
         {
             var recipes = new List<RecipeViewModel>();
 
-            if (string.IsNullOrWhiteSpace(filter))
+            if (string.IsNullOrWhiteSpace(query))
             {
                 recipes = _context.Recipe
                                     .Include(x => x.Ingredients)
@@ -46,7 +46,7 @@ namespace Recipes.Pages
                                    .Include(x => x.Ingredients)
                                    .ThenInclude(x => x.Ingredient)
                                    .Include(x => x.Instructions)
-                                   .Where(x => x.Description.Contains(filter) || x.Title.Contains(filter))
+                                   .Where(x => x.Description.Contains(query) || x.Title.Contains(query) || x.Ingredients.Select(z => z.Ingredient.Name).Contains(query))
                                    .Select(x => new RecipeViewModel
                                    {
                                        Id = x.Id,

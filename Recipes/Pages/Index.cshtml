@@ -4,26 +4,24 @@
     ViewData["Title"] = "Home page";
 }
 
-
-
-    <div class="text-center">
-        <div class="container">
-        
-
+<div class="container">
+    <div class="w-25">
+      <input type="text" class="form-control" id="search" placeholder="Search">
+    </div>
+    <br />
+    <div class="text-center">      
             <table id="table">
                 <thead>
                     <tr>
                         <th data-field="id" data-visible="false">Id</th>
                         <th data-field="title">Title</th>
-                        <th data-field="description">Description</th>
+                        <th data-field="description">Description</th>                        
                     </tr>
                 </thead>
             </table>
-        </div>
     </div>
-
-  <button id="test"> Test </button>
-
+</div>
+  
 @section Scripts { 
 <script>
    
@@ -38,20 +36,23 @@
             dataType: "json",
         }).done(function (data) {
 
-            globalData = data.recipes;
-
             $table.bootstrapTable({
                 data: data.recipes,
                 columns: [{}, {}, {},
                 {
-                    field: 'operate',
-                    title: 'Delete',
+                    title: 'Ingredients',
                     align: 'center',
                     valign: 'middle',
                     clickToSelect: false,
                     formatter: function (value, row, index) {
-                        console.log(row)
-                        return '<button class=\'btn btn-danger \' pageName="' + row.id + '" pageDetails="' + row.title + '"  >Delete</button> ';
+
+                        var ingredients = [];
+
+                        row.ingredients.forEach(function (i) {                          
+                          ingredients.push(i.name);
+                        });
+
+                        return ingredients.join(', ');
                     }
                 }],
                 onClickRow: function (row) {
@@ -61,13 +62,13 @@
 
         });
 
-        $("#test").click(function (e) {
+        $("#search").keyup(function () {
 
             $.ajax({
                 url: '/?handler=Search',
                 contentType: "application/json;",
                 dataType: "json",
-                data: { filter: "test" },
+                data: { query: $(this).val() },
             }).done(function (data) {
 
                 $table.bootstrapTable('load', data.recipes);

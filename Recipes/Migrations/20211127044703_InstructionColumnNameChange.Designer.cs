@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Recipes.Data;
 
 namespace Recipes.Migrations
 {
     [DbContext(typeof(RecipeContext))]
-    partial class RecipeContextModelSnapshot : ModelSnapshot
+    [Migration("20211127044703_InstructionColumnNameChange")]
+    partial class InstructionColumnNameChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,18 +34,6 @@ namespace Recipes.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Ingredient");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Salt"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Pepper"
-                        });
                 });
 
             modelBuilder.Entity("Recipes.Data.Instruction", b =>
@@ -56,7 +46,7 @@ namespace Recipes.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RecipeId")
+                    b.Property<int?>("RecipeId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -64,20 +54,6 @@ namespace Recipes.Migrations
                     b.HasIndex("RecipeId");
 
                     b.ToTable("Instruction");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Add cup of Salt",
-                            RecipeId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Add cup of pepper",
-                            RecipeId = 1
-                        });
                 });
 
             modelBuilder.Entity("Recipes.Data.Recipe", b =>
@@ -99,20 +75,6 @@ namespace Recipes.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Recipe");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "The Best Recipe",
-                            Title = "Recipe 1"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Not Quite The Best Recipe",
-                            Title = "Recipe 2"
-                        });
                 });
 
             modelBuilder.Entity("Recipes.Data.RecipeIngredient", b =>
@@ -135,29 +97,13 @@ namespace Recipes.Migrations
                     b.HasIndex("RecipeId");
 
                     b.ToTable("RecipeIngredient");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            IngredientId = 1,
-                            RecipeId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            IngredientId = 2,
-                            RecipeId = 1
-                        });
                 });
 
             modelBuilder.Entity("Recipes.Data.Instruction", b =>
                 {
                     b.HasOne("Recipes.Data.Recipe", null)
                         .WithMany("Instructions")
-                        .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RecipeId");
                 });
 
             modelBuilder.Entity("Recipes.Data.RecipeIngredient", b =>

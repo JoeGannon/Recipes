@@ -12,6 +12,21 @@ namespace Recipes.Data
         public RecipeContext(DbContextOptions<RecipeContext> options) : base(options)
         {
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Recipe>().HasData(new Recipe { Id = 1, Title = "Recipe 1", Description = "The Best Recipe" });
+            modelBuilder.Entity<Recipe>().HasData(new Recipe { Id = 2, Title = "Recipe 2", Description = "Not Quite The Best Recipe" });
+
+            modelBuilder.Entity<Ingredient>().HasData(new Ingredient { Id = 1, Name = "Salt" });
+            modelBuilder.Entity<Ingredient>().HasData(new Ingredient { Id = 2, Name = "Pepper" });
+
+            modelBuilder.Entity<Instruction>().HasData(new Instruction { Id = 1, Description = "Add cup of Salt", RecipeId = 1 });
+            modelBuilder.Entity<Instruction>().HasData(new Instruction { Id = 2, Description = "Add cup of pepper", RecipeId = 1 });
+
+            modelBuilder.Entity<RecipeIngredient>().HasData(new RecipeIngredient { Id = 1, RecipeId = 1, IngredientId = 1 });
+            modelBuilder.Entity<RecipeIngredient>().HasData(new RecipeIngredient { Id = 2, RecipeId = 1, IngredientId = 2 });
+        }
     }
 
     public class Recipe
@@ -42,6 +57,7 @@ namespace Recipes.Data
     public class Instruction
     {
         public int Id { get; set; }
-        public string Name { get; set; } 
+        public string Description { get; set; } 
+        public int RecipeId { get; set; }
     }
 }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Recipes.Data;
 
 namespace Recipes.Migrations
 {
     [DbContext(typeof(RecipeContext))]
-    partial class RecipeContextModelSnapshot : ModelSnapshot
+    [Migration("20211127060023_UpdateManyToMany")]
+    partial class UpdateManyToMany
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,26 +137,6 @@ namespace Recipes.Migrations
                     b.HasIndex("RecipeId");
 
                     b.ToTable("RecipeIngredient");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            IngredientId = 1,
-                            RecipeId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            IngredientId = 2,
-                            RecipeId = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            IngredientId = 1,
-                            RecipeId = 2
-                        });
                 });
 
             modelBuilder.Entity("Recipes.Data.Instruction", b =>

@@ -10,6 +10,7 @@ namespace Recipes.Features.Search
 {
     public class RecipeSearchQuery : IRequest<IEnumerable<RecipeSearchResult>>
     {
+        public int? Id { get; set; }
         public string Query { get; set; }
     }
 
@@ -32,6 +33,9 @@ namespace Recipes.Features.Search
                                     .Include(x => x.Instructions)
                                     .AsQueryable();
 
+            if (request.Id != null)
+                query = query.Where(x => x.Id == request.Id);
+
             if (string.IsNullOrWhiteSpace(request.Query) == false)
             {
                 query = query.Where(x => x.Description.Contains(request.Query) || 
@@ -45,6 +49,7 @@ namespace Recipes.Features.Search
                                     Id = x.Id,
                                     Title = x.Title,
                                     Description = x.Description,
+                                    Image = x.Image,
                                     Ingredients = x.Ingredients.Select(z => new Ingredient { Id = z.IngredientId, Name = z.Ingredient.Name }),
                                     Instructions = x.Instructions.Select(z => new Instruction { Id = z.Id, Description = z.Description })
                                 })

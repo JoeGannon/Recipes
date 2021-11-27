@@ -1,0 +1,45 @@
+﻿@page
+@model Recipes.Pages.CreateEditModel
+@{
+    var createOrEdit = Model.Id > 0 ? "Edit" : "Create";
+    ViewData["Title"] = $"{createOrEdit} Recipe";
+}
+
+    <h1>@ViewData["Title"]</h1>
+
+
+@{
+    var imgSrc = "";
+    if (Model.RawImage != null)
+    {
+        var base64 = Convert.ToBase64String(Model.RawImage);
+        imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+    }
+}
+
+<img src="@imgSrc" />
+
+<br />
+
+<form method="post" enctype="multipart/form-data">
+
+    @Html.HiddenFor(x => x.Id)
+    @Html.HiddenFor(x => x.RawImage)
+    <div class="form-group">
+        <label>Title</label>
+        @Html.TextBoxFor(x => x.Title, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>Description</label>
+        @Html.TextBoxFor(x => x.Description, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>Upload New Image</label>
+        <br />
+        <input type="file" accept=".jpg,.gif,.png" name="@nameof(Model.Image)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

@@ -7,6 +7,7 @@ namespace Recipes.Features.Search
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public byte[] Image { get; set; }
         public IEnumerable<Ingredient> Ingredients { get; set; }
         public IEnumerable<Instruction> Instructions { get; set; }
     }

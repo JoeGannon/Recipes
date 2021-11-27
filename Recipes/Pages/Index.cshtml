@@ -4,23 +4,24 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="container">
-    <div class="w-25">
-      <input type="text" class="form-control" id="search" placeholder="Search">
-    </div>
-    <br />
-    <div class="text-center">      
+    <div class="container">
+        <div class="input-group">
+            <input type="text" class="form-control" id="search" placeholder="Search">
+            <a href="/createedit" class="btn btn-info" id="create" style="margin-left:60%">Create Recipe</a>
+        </div>
+        <br />
+        <div class="text-center">
             <table id="table">
                 <thead>
                     <tr>
                         <th data-field="id" data-visible="false">Id</th>
                         <th data-field="title">Title</th>
-                        <th data-field="description">Description</th>                        
+                        <th data-field="description">Description</th>
                     </tr>
                 </thead>
             </table>
+        </div>
     </div>
-</div>
   
 @section Scripts { 
 <script>
@@ -56,7 +57,7 @@
                     }
                 }],
                 onClickRow: function (row) {
-                    console.log(row.id);
+                    window.location.href = '/createedit?id=' + row.id;
                 }
             });
 

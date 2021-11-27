@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Recipes.Data;
+using Recipes.Features;
 
 namespace Recipes
 {
@@ -24,6 +25,9 @@ namespace Recipes
             services.AddRazorPages();
             services.AddDbContext<RecipeContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddMediatR(typeof(Startup));
+
+            //todo register dynamically for all types
+            services.AddScoped<IRequestHandler<DeleteCommand<Instruction>, Unit>, DeleteCommandHandler<Instruction>>();
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }

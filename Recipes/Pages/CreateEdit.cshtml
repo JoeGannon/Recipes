@@ -1,11 +1,15 @@
 ﻿@page
 @model Recipes.Pages.CreateEditModel
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
+@{
+    var token = antiforgery.GetAndStoreTokens(HttpContext).RequestToken;
+}
 @{
     var createOrEdit = Model.Id > 0 ? "Edit" : "Create";
     ViewData["Title"] = $"{createOrEdit} Recipe";
 }
 
-    <h1>@ViewData["Title"]</h1>
+<h1>@ViewData["Title"]</h1>
 
 
 @{
@@ -25,6 +29,8 @@
 
     @Html.HiddenFor(x => x.Id)
     @Html.HiddenFor(x => x.RawImage)
+    @Html.Hidden("__RequestVerificationToken", token)
+
     <div class="form-group">
         <label>Title</label>
         @Html.TextBoxFor(x => x.Title, new { @class = "form-control" })
@@ -35,6 +41,26 @@
         @Html.TextBoxFor(x => x.Description, new { @class = "form-control" })
     </div>
 
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="d-none">Id</th>
+                <th>Instruction</th>
+                <th> Delete </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var instruction in Model.Instructions)
+            {
+                <tr>
+                    <td class="d-none instructionId">@instruction.Id</td>
+                    <td>@instruction.Description</td>
+                    <td><button type="button" class="btn btn-danger instructionDelete">Delete</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
     <div class="form-group">
         <label>Upload New Image</label>
         <br />
@@ -43,3 +69,32 @@
 
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+
+
+
+@section Scripts {
+    <script>
+
+
+        $(function () {
+
+            $(".instructionDelete").click(function (e) {
+
+                $tr = $(this).closest('tr');
+
+                var instructionId = $tr.find('.instructionId').html();
+
+                $.ajax({
+                    url: '/createedit?handler=InstructionDelete',
+                    method: 'post',
+                    headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                    data: { instructionId : instructionId },
+                }).done(function (data) {
+
+                    $tr.remove();
+                });
+            })
+        });
+    </script>
+
+}

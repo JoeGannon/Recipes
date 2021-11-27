@@ -1,8 +1,7 @@
 ﻿namespace Recipes.Data
 {
-    public class RecipeIngredient
+    public class RecipeIngredient : Entity 
     {
-        public int Id { get; set; }
         public int RecipeId { get; set; }
         public Recipe Recipe { get; set; }
         public int IngredientId { get; set; }

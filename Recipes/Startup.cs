@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +33,8 @@ namespace Recipes
             services.AddScoped<IRequestHandler<AddCommand<Instruction>, int>, AddCommandHandler<Instruction>>();
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
+            services.AddMvc().WithRazorPagesRoot("/Features");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

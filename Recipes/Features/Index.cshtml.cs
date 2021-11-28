@@ -18,6 +18,7 @@ namespace Recipes.Pages
 
         public void OnGet()
         {
+
         }
 
         public async Task<IActionResult> OnGetSearch(string query)

@@ -1,18 +1,17 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Recipes.Features;
-using Recipes.Features.CreateEdit;
 using Recipes.Features.Search;
 
-namespace Recipes.Pages
+namespace Recipes.Features.CreateEdit
 {
     [BindProperties]
-    public class CreateEditModel : PageModel
+    public class IndexModel : PageModel
     {
         private readonly IMediator _mediator;
 
@@ -25,7 +24,7 @@ namespace Recipes.Pages
         public List<(int Id, string Description)> Instructions { get; set; } = new List<(int Id, string Description)>();
         public IFormFile Image { get; set; }
 
-        public CreateEditModel(IMediator mediator)
+        public IndexModel(IMediator mediator)
         {
             _mediator = mediator;
         }
@@ -41,7 +40,7 @@ namespace Recipes.Pages
                 Description = result.Description;
                 RawImage = result.Image;
                 Instructions = result.Instructions.Select(x => (x.Id, x.Description)).ToList();
-                SelectedIngredients = result.Ingredients.Select(x => x.Id).ToArray();                
+                SelectedIngredients = result.Ingredients.Select(x => x.Id).ToArray();
             }
 
             AllIngredients = (await _mediator.Send(new AllIngredientsQuery())).Select(x => (x.Id, x.Name)).ToList();
@@ -70,7 +69,7 @@ namespace Recipes.Pages
 
             var id = await _mediator.Send(recipeCreate);
 
-            return RedirectToPage("/CreateEdit", new { id });
+            return RedirectToPage(new { id = id });
         }
 
         public async Task<IActionResult> OnPostInstructionDelete(int instructionId)

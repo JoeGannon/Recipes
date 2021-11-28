@@ -1,5 +1,5 @@
 ﻿@page
-@model Recipes.Pages.CreateEditModel
+@model Recipes.Features.CreateEdit.IndexModel
 
 @{
     var createOrEdit = Model.Id > 0 ? "Edit" : "Create";
@@ -19,13 +19,15 @@
 }
 
 <style>
-    input[type=text]{
-    margin-bottom: 25px;
- }
-  label {
-      margin-top:25px;
-  }
-  .multiselect-native-select, #multi-select {
+    input[type=text] {
+        margin-bottom: 25px;
+    }
+
+    label {
+        margin-top: 25px;
+    }
+
+    .multiselect-native-select, #multi-select {
         width: 500px !important;
     }
 </style>
@@ -150,7 +152,7 @@
 
                     $("#instructionTable tr:last").after(`<tr>
                                                             <td class="d-none instructionId">`+ data.id + `</td>
-                                                            <td>`+ data.description + `</td> 
+                                                            <td>`+ data.description + `</td>
                                                             <td><button type="button" class="btn btn-danger instructionDelete">Delete</button></td>
                                                           </tr>`);
                 });
